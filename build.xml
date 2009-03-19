@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<project name="Text-Table-Formatter" basedir="." default="build">
+
+  <loadproperties srcFile="conf/version.properties" />
+
+  <target name="init">
+    <mkdir dir="${main.build.dir}" />
+    <mkdir dir="${test.build.dir}" />
+    <mkdir dir="${examples.build.dir}" />
+    <mkdir dir="${screenshots.build.dir}" />
+    <mkdir dir="${javadoc.dir}" />
+    <mkdir dir="${dist.dir}" />
+  </target>
+
+  <target name="clean">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${dist.dir}" includes="**/*" />
+    </delete>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${build.dir}" includes="**/*" />
+    </delete>
+    <antcall target="init" />
+  </target>
+
+  <property name="project.name" value="text-table-formatter" />
+  <property name="jarfile" value="${project.name}-${version}.jar" />
+  <property name="main.src.dir" value="src/main/java" />
+  <property name="test.src.dir" value="src/test/java" />
+  <property name="examples.src.dir" value="src/examples/java" />
+  <property name="metadata.dir" value="src/main/metadata" />
+  <property name="build.dir" value="build" />
+  <property name="main.build.dir" value="build/java" />
+  <property name="test.build.dir" value="build/test" />
+  <property name="examples.build.dir" value="build/examples" />
+  <property name="dist.dir" value="dist" />
+  <property name="javadoc.dir" value="build/javadocs" />
+  <property name="screenshots.build.dir" value="build/screenshots" />
+  
+  <target name="compile">
+    <javac destdir="${main.build.dir}"
+           includes="**/*.java"
+           debug="true"
+           deprecation="true"
+           source="1.5">
+      <src path="${main.src.dir}" />
+      <classpath>
+        <pathelement location="lib/log4j-1.2.9.jar" />
+      </classpath>
+    </javac>
+    <javac destdir="${test.build.dir}"
+           includes="**/*.java"
+           debug="true"
+           deprecation="true"
+           source="1.5">
+      <src path="${test.src.dir}" />
+      <classpath>
+        <pathelement path="${main.build.dir}" />
+        <pathelement location="lib/log4j-1.2.9.jar" />
+        <pathelement location="lib/junit.jar" />
+      </classpath>
+    </javac>
+    <javac destdir="${examples.build.dir}"
+           includes="**/*.java"
+           debug="true"
+           deprecation="true"
+           source="1.5">
+      <src path="${examples.src.dir}" />
+      <classpath>
+        <pathelement path="${main.build.dir}" />
+        <pathelement location="lib/log4j-1.2.9.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="javadocs">
+    <javadoc destdir="${javadoc.dir}"
+             author="true"
+             version="true"
+             use="true"
+             stylesheetfile="src/main/javadoc/javadoc.css"
+             windowtitle="Nocrala Tools">
+      <doctitle>Text Table Formatter</doctitle>
+      <bottom>&lt;i&gt;Nocrala tools.&lt;/i&gt;</bottom>
+      <tag name="todo" scope="all" description="To do:" />
+      <classpath>
+        <pathelement location="lib/log4j-1.2.9.jar" />
+<!--        
+        <pathelement location="lib/ant.jar" />
+-->        
+      </classpath>
+      <packageset dir="${main.src.dir}" defaultexcludes="yes" />
+    </javadoc>
+  </target>
+
+  <target name="jar">
+    <jar destfile="${dist.dir}/${jarfile}" basedir="${main.build.dir}" />
+  </target>
+
+  <target name="build" depends="compile, jar" />
+
+  <target name="clean-build" depends="clean, build" />
+
+  <target name="clean-build-test" depends="clean, build, test" />
+
+  <target name="test">
+    <java classname="org.nocrala.tools.texttablefmt.AllTests" failonerror="true">
+      <classpath>
+        <pathelement path="${metadata.dir}" />
+        <pathelement path="${main.build.dir}" />
+        <pathelement path="${test.build.dir}" />
+        <pathelement location="lib/log4j-1.2.9.jar" />
+        <pathelement location="lib/junit.jar" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="release" depends="clean-build, javadocs">
+    <java classname="examples.ScreenShots">
+      <arg value="${screenshots.build.dir}" />
+      <classpath>
+        <pathelement path="${metadata.dir}" />
+        <pathelement location="${examples.build.dir}"/>
+        <pathelement location="${dist.dir}/${jarfile}" />
+        <pathelement location="lib/log4j-1.2.9.jar" />
+      </classpath>
+    </java>
+  </target>
+  
+</project>
