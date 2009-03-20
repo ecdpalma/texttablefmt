@@ -139,7 +139,8 @@
       <zipfileset file="lib/log4j-1.2.9.jar" prefix="lib" />
       <zipfileset file="docs/build.xml" prefix="some-examples" />
       <zipfileset dir="${examples.src.dir}" prefix="some-examples" />
-      <zipfileset dir="docs/releasedDocs" prefix="docs" />
+      <zipfileset dir="docs/releasedDocs" prefix="docs" excludes="QuickStart.txt" />
+      <zipfileset file="docs/releasedDocs/QuickStart.txt" prefix="." />
       <zipfileset dir="${javadoc.dir}" prefix="docs/javadocs" />
     </zip>
   </target>
