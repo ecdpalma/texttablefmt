@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
  * like:</p>
  * 
  * <pre class='example'>
+ * 
  *  +---------+-----------+----------+--------+
  *  |Country  | Population|Area (km2)| Density|
  *  +---------+-----------+----------+--------+
@@ -27,13 +28,13 @@ import org.apache.log4j.Logger;
  * <p>Cells are added using the <code>addCell()</code> method and finally
  * rendered as a String using the <code>render()</code> method.</p>
  * 
- * <p>The entire table is built in memory, so is not intended for a massive
- * numbers of rows/cells. Although the size of the in-memory table depends on
+ * <p>The entire table is built in memory, so this class is not intended for a massive
+ * numbers of rows/cells. Although the maximum size of the in-memory table depends on
  * the amount of available memory the JVM has, as a rule of thumb, don't exceed
- * 10.000 total cells. If you need to render a bigger table, use the class
+ * 10.000 total cells. If you need to render a bigger table, use the 
  * <code>StreamingTable</code> class instead.</p>
  * 
- * <p>If no widths are specified for a column, its width will correspond to the
+ * <p>If no widths are specified for a column, its width will adjusted to the
  * wider cell in the column.</p>
  * 
  * <p>As an example, the following code:</p>
@@ -65,6 +66,10 @@ import org.apache.log4j.Logger;
  *  +-------+--------+
  *  </pre>
  * 
+ * <p>The generated table can be customized using a <code>BorderStyle</code>, 
+ * <code>ShownBorders</code> and cell widths. Besides, cell rendering can be 
+ * customized on a cell basis using <code>CellStyle</code>s.</p>  
+ * 
  * @author valarcon
  * 
  */
@@ -88,44 +93,100 @@ public class Table {
 
   private Row currentRow;
 
+  /**
+   * Creates a table using <code>BorderStyle.CLASSIC</code> and 
+   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML 
+   * escaping and no left margin.
+   *  
+   * @param totalColumns Total columns of this table. 
+   */
   public Table(final int totalColumns) {
     initialize(totalColumns);
     this.tableStyle = new TableStyle(BorderStyle.CLASSIC,
         ShownBorders.SURROUND_HEADER_AND_COLUMNS, false, 0, null);
   }
 
-  public Table(final int totalColumns, final BorderStyle borderTiles) {
+  /**
+   * Creates a table using the specified border style and 
+   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML 
+   * escaping and no left margin.
+   * 
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   */
+  public Table(final int totalColumns, final BorderStyle borderStyle) {
     initialize(totalColumns);
-    this.tableStyle = new TableStyle(borderTiles,
+    this.tableStyle = new TableStyle(borderStyle,
         ShownBorders.SURROUND_HEADER_AND_COLUMNS, false, 0, null);
   }
+  
+  /**
+   * Creates a table using the specified border style and shown borders, 
+   * with no XML escaping and no left margin.
+   * 
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   */
 
-  public Table(final int totalColumns, final BorderStyle borderTiles,
+  public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders) {
     initialize(totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, shownBorders, false, 0, null);
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, false, 0, null);
   }
 
-  public Table(final int totalColumns, final BorderStyle borderTiles,
+  /**
+   * Creates a table using the specified border style and shown borders, 
+   * XML escaping and no left margin.
+   * 
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   * @param escapeXml Specifies if the rendered text should be escaped using 
+   * XML entities.
+   */
+  public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders, final boolean escapeXml) {
     initialize(totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, shownBorders, escapeXml, 0,
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, escapeXml, 0,
         null);
   }
 
-  public Table(final int totalColumns, final BorderStyle borderTiles,
+  /**
+   * Creates a table using the specified border style and shown borders, 
+   * XML escaping and left margin.
+   * 
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   * @param escapeXml Specifies if the rendered text should be escaped using 
+   * XML entities.
+   * @param leftMargin Specifies how many blank spaces to use as a left margin for the table.
+   */
+  public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders, final boolean escapeXml,
       final int leftMargin) {
     initialize(totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, shownBorders, escapeXml,
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, escapeXml,
         leftMargin, null);
   }
 
-  public Table(final int totalColumns, final BorderStyle borderTiles,
+  /**
+   * Creates a table using the specified border style and shown borders, 
+   * XML escaping and left margin.
+   * 
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   * @param escapeXml Specifies if the rendered text should be escaped using 
+   * XML entities.
+   * @param prompt Text to use as left margin for the table.
+   */
+  public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders, final boolean escapeXml,
       final String prompt) {
     initialize(totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, shownBorders, escapeXml, 0,
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, escapeXml, 0,
         prompt);
   }
 
@@ -141,10 +202,13 @@ public class Table {
   }
 
   /**
-   * Sets the minimum and maximum desired column widths of a specific column.
+   * Sets the minimum and maximum desired column widths of a specific column. If 
+   * no width range is specified for a column, its width will be adjusted to the 
+   * wider cell in the column.
    * 
    * @param col Column whose desired widths will be set. First column is 0
-   * (zero).
+   * (zero).</p>
+
    * @param minWidth Minimum desired width.
    * @param maxWidth Maximum desired width.
    */
@@ -154,7 +218,8 @@ public class Table {
   }
 
   /**
-   * Adds a cell with the default CellStyle.
+   * Adds a cell with the default CellStyle. See <code>CellStyle</code> for details
+   * on its default characteristics.
    * 
    * @param content Cell text.
    */

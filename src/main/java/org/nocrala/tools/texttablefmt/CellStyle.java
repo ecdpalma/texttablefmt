@@ -19,20 +19,57 @@ public class CellStyle {
 
   private static final NullStyle DEFAULT_NULL_STYLE = NullStyle.emptyString;
 
+  /**
+   * This enumeration is used to specify how a text is horizontally aligned in a cell.
+   * @author valarcon
+   */
   public enum HorizontalAlign {
-    left, center, right
+    /**
+     * Will align to the left.
+     */
+    left,
+    /**
+     * Will center the text.
+     */
+    center,
+    /**
+     * Will align to the right.
+     */
+    right
   };
 
+  /**
+   * This enumeration is used to specify how to reduce a text to fit it in a small cell.
+   * @author valarcon
+   */
   public enum AbbreviationStyle {
-    crop, dots
+    /**
+     * Will simply crop the text at the maximum allowed length.
+     */
+    crop,
+    /**
+     * Will add three dots at the end of the text to show it has been abbreviated. 
+     */
+    dots
   };
 
   private static final String NULL_TEXT = "<null>";
 
   private static final String DOTS_TEXT = "...";
 
+  /**
+   * This enumeration is used to specify how to display cell with null values.
+   * @author valarcon
+   */
   public enum NullStyle {
-    emptyString, nullText
+    /**
+     * Will show a empty string (zero-length).
+     */
+    emptyString,
+    /**
+     * Will display the text <code>&lt;null&gt;</code> instead.
+     */
+    nullText
   };
 
   private HorizontalAlign horAlign;
@@ -42,25 +79,18 @@ public class CellStyle {
   private NullStyle nullStyle;
 
   /**
-   * <p>Default style. It assumes:</p>
-   * <ul>
-   * <li>HorizontalAlign.left</li>
-   * <li>AbbreviationStyle.dots</li>
-   * <li>NullStyle.emptyString</li>
-   * </ul>
+   * <p>Default style that assumes <b>HorizontalAlign.left</b>, <b>AbbreviationStyle.dots</b> 
+   * and <b>NullStyle.emptyString</b>.</p> 
    */
-  
+
   public CellStyle() {
     initialize(DEFAULT_HORIZONTAL_ALIGN, DEFAULT_ABBREVIATION_STYLE,
         DEFAULT_NULL_STYLE);
   }
-  
+
   /**
-   * <p>Default style. It assumes:</p>
-   * <ul>
-   * <li>AbbreviationStyle.dots</li>
-   * <li>NullStyle.emptyString</li>
-   * </ul>
+   * <p>Style with a specified horizontal alignment, that assumes <b>AbbreviationStyle.dots</b> 
+   * and <b>NullStyle.emptyString</b>.</p> 
    */
 
   public CellStyle(final HorizontalAlign horAlign) {
@@ -68,22 +98,20 @@ public class CellStyle {
   }
 
   /**
-   * <p>Default style. It assumes:</p>
-   * <ul>
-   * <li>NullStyle.emptyString</li>
-   * </ul>
+   * <p>Style with a specified horizontal alignment and abbreviation style, that assumes 
+   * <b>NullStyle.emptyString</b>.</p> 
    */
   public CellStyle(final HorizontalAlign horAlign,
       final AbbreviationStyle abbStyle) {
     initialize(horAlign, abbStyle, DEFAULT_NULL_STYLE);
   }
-  
+
   /**
    * Full constructor, that specifies all characteristics.
    * 
-   * @param horAlign
-   * @param abbStyle
-   * @param nullStyle
+   * @param horAlign Horizontal alignment.
+   * @param abbStyle Abbreviation style.
+   * @param nullStyle Null style.
    */
 
   public CellStyle(final HorizontalAlign horAlign,
@@ -109,7 +137,7 @@ public class CellStyle {
   }
 
   /**
-   * Returns the width of a rendered text, based on the cell style.
+   * Returns the width of a rendered text, based on the cell content and style.
    * 
    * @param txt Text to render.
    * @return width of a rendered text, based on the cell style.
@@ -119,7 +147,7 @@ public class CellStyle {
   }
 
   /**
-   * Renders a text based on the cell style and the specified width.
+   * Renders a text based on the cell content, style and specified width.
    * 
    * @param txt Text to render.
    * @param width Fixed width to accommodate the test to.

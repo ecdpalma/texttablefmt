@@ -6,21 +6,48 @@ import org.apache.log4j.Logger;
 import org.nocrala.tools.utils.Filler;
 
 /**
- * <p>Shown borders define which borders and internal separators are
+ * <p>A ShownBorders define which borders and internal separators are
  * rendered.</p>
  * 
- * <p>Shown borders do not control the specific characters (tiles) that
- * will be used to render those borders; BorderTiles is used to define those
+ * <p>A ShownBorders does not control the specific characters (tiles) that
+ * will be used to render those borders; a BorderStyle is used to define those
  * ones.</p>
  * 
  * <p>You can use predefined styles or custom styles.</p>
  * 
  * <h3>Predefined Styles</h3>
  * 
- * <p>You can use the predefined styles: </p>
+ * <p>Below all predefined ShownBorders are listed with examples. For simplicity 
+ * and clarity, all these examples use the style BorderStyle.CLASSIC, but they work 
+ * with any BorderStyle:</p>
  * 
- * <p><b>Default: (BorderStyle.SURROUND_HEADER_AND_COLUMNS,
- * BorderTiles.CLASSIC)</b></p>
+ * 
+ * <p><b>ShownBorders.ALL</b></p>
+ * 
+ * <pre class='example'>
+ *  +---------+----------+----------+-------+
+ *  |Country  |Population|Area (km2)|Density|
+ *  +---------+----------+----------+-------+
+ *  |Chile    |17 000 000| 1 250 000|  13.60|
+ *  +---------+----------+----------+-------+
+ *  |Argentina|50 000 000| 3 000 000|  16.67|
+ *  +---------+----------+----------+-------+
+ *  |Brasil   |80 000 000| 5 000 000|  16.00|
+ *  +---------+----------+----------+-------+
+ * </pre>
+ * 
+ * 
+ * <p><b>ShownBorders.NONE</b></p>
+ * 
+ * <pre class='example'>
+ *  Country  PopulationArea (km2)Density
+ *  Chile    17 000 000 1 250 000  13.60
+ *  Argentina50 000 000 3 000 000  16.67
+ *  Brasil   80 000 000 5 000 000  16.00
+ * </pre>
+ * 
+ * 
+ * <p><b><u>Default:</u> ShownBorders.SURROUND_HEADER_AND_COLUMNS</b></p>
  * 
  * <pre class='example'>
  *  +---------+----------+----------+-------+
@@ -32,7 +59,7 @@ import org.nocrala.tools.utils.Filler;
  *  +---------+----------+----------+-------+
  * </pre>
  * 
- * <p><b>BorderStyle.SURROUND_HEADER_FOOTER_AND_COLUMNS</b></p>
+ * <p><b>ShownBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS</b></p>
  * 
  * <pre class='example'>
  *  +---------+-----------+----------+-------+
@@ -46,7 +73,7 @@ import org.nocrala.tools.utils.Filler;
  *  +---------+-----------+----------+-------+
  * </pre>
  * 
- * <p><b>BorderStyle.SURROUND</b></p>
+ * <p><b>ShownBorders.SURROUND</b></p>
  * 
  * <pre class='example'>
  *  +------------------------------------+
@@ -58,7 +85,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_AND_COLUMNS</b></p>
+ * <p><b>ShownBorders.HEADER_AND_COLUMNS</b></p>
  * 
  * <pre class='example'>
  *  Country  |Population|Area (km2)|Density
@@ -69,7 +96,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_FOOTER_AND_COLUMNS</b></p>
+ * <p><b>ShownBorders.HEADER_FOOTER_AND_COLUMNS</b></p>
  * 
  * <pre class='example'>
  *  Country  |Population|Area (km2)|Density
@@ -81,7 +108,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_AND_FOOTER</b></p>
+ * <p><b>ShownBorders.HEADER_AND_FOOTER</b></p>
  * 
  * <pre class='example'>
  *  Country  PopulationArea (km2)Density
@@ -93,7 +120,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_AND_FIRST_COLLUMN</b></p>
+ * <p><b>ShownBorders.HEADER_AND_FIRST_COLLUMN</b></p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)Density
@@ -104,7 +131,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_FIRST_AND_LAST_COLLUMN</b></p>
+ * <p><b>ShownBorders.HEADER_FIRST_AND_LAST_COLLUMN</b></p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)|Density
@@ -115,7 +142,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_FOOTER_AND_FIRST_COLLUMN</b></p>
+ * <p><b>ShownBorders.HEADER_FOOTER_AND_FIRST_COLLUMN</b></p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)Density
@@ -127,7 +154,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_FOOTER_FIRST_AND_LAST_COLLUMN</b></p>
+ * <p><b>ShownBorders.HEADER_FOOTER_FIRST_AND_LAST_COLLUMN</b></p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)|Density
@@ -138,8 +165,10 @@ import org.nocrala.tools.utils.Filler;
  *  Brasil   |80 000 000 5 000 000|  16.00
  * </pre>
  * 
+ * <br>
+ * <p>In combination with a BorderStyle you can render cleaner tables, like in the following examples:</p>
  * 
- * <p><b>BorderStyle.HEADER_FOOTER_AND_COLUMNS, BorderTiles.HORIZONTAL_ONLY</b></p>
+ * <p><b>ShownBorders.HEADER_FOOTER_AND_COLUMNS, BorderStyle.HORIZONTAL_ONLY</b></p>
  * 
  * <pre class='example'>
  *  Country   Population Area (km2) Density
@@ -151,7 +180,7 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>BorderStyle.HEADER_ONLY, BorderTiles.HORIZONTAL_ONLY</b></p>
+ * <p><b>ShownBorders.HEADER_ONLY, BorderStyle.HORIZONTAL_ONLY</b></p>
  * 
  * <pre class='example'>
  *  Country   Population Area (km2) Density
@@ -161,31 +190,7 @@ import org.nocrala.tools.utils.Filler;
  *  Brasil    80 000 000  5 000 000   16.00
  * </pre>
  * 
- * 
- * <p><b>BorderStyle.NONE</b></p>
- * 
- * <pre class='example'>
- *  Country  PopulationArea (km2)Density
- *  Chile    17 000 000 1 250 000  13.60
- *  Argentina50 000 000 3 000 000  16.67
- *  Brasil   80 000 000 5 000 000  16.00
- * </pre>
- * 
- * 
- * <p><b>BorderStyle.ALL</b></p>
- * 
- * <pre class='example'>
- *  +---------+----------+----------+-------+
- *  |Country  |Population|Area (km2)|Density|
- *  +---------+----------+----------+-------+
- *  |Chile    |17 000 000| 1 250 000|  13.60|
- *  +---------+----------+----------+-------+
- *  |Argentina|50 000 000| 3 000 000|  16.67|
- *  +---------+----------+----------+-------+
- *  |Brasil   |80 000 000| 5 000 000|  16.00|
- *  +---------+----------+----------+-------+
- * </pre>
- * 
+ *
  * <p>If no predefined style fits your needs, you can use a...</p>
  * 
  * <h3>Custom styles</h3>
@@ -213,15 +218,15 @@ import org.nocrala.tools.utils.Filler;
  *       +- bottom border -----+----------+----------+----------+       
  * </pre>
  * 
- * <p>There are single left border, left separator, right separator and right
+ * <p>For vertical separators, there is a single left border, left separator, right separator and right
  * border. All separator inside them are considered center separators.
- * Similarly, there can be many middle separators.</p>
+ * Similarly, for horizontal separator there can be many middle separators.</p>
  * 
- * <p>For example, you can use</p>
+ * <p>For example, you can use:</p>
  * 
- * <pre class='example'>new BorderStyle("t.t.t.t.t.")</pre>
+ * <pre class='example'>    new ShownBorders("t.t.t.t.t.")</pre>
  * 
- * <p>to generate:</p>
+ * <p>to generate a table like:</p>
  * 
  * <pre class='example'>
  *    +-------------------+-----------------
@@ -233,7 +238,7 @@ import org.nocrala.tools.utils.Filler;
  *    |Brasil   80 000 000| 5 000 000  16.00
  * </pre>
  * 
- * <p>Use any combination of 't' and '.' that fits your needs.</p>
+ * <p>Use any combination of <code>'t'</code> and <code>'.'</code> that fits your needs.</p>
  * 
  */
 

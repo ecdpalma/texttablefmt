@@ -11,9 +11,13 @@
     <mkdir dir="${screenshots.build.dir}" />
     <mkdir dir="${javadoc.dir}" />
     <mkdir dir="${dist.dir}" />
+    <mkdir dir="${release.dir}" />
   </target>
 
   <target name="clean">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${release.dir}" includes="**/*" />
+    </delete>
     <delete includeEmptyDirs="true">
       <fileset dir="${dist.dir}" includes="**/*" />
     </delete>
@@ -24,7 +28,6 @@
   </target>
 
   <property name="project.name" value="text-table-formatter" />
-  <property name="jarfile" value="${project.name}-${version}.jar" />
   <property name="main.src.dir" value="src/main/java" />
   <property name="test.src.dir" value="src/test/java" />
   <property name="examples.src.dir" value="src/examples/java" />
@@ -34,9 +37,13 @@
   <property name="test.build.dir" value="build/test" />
   <property name="examples.build.dir" value="build/examples" />
   <property name="dist.dir" value="dist" />
+  <property name="release.dir" value="release" />
   <property name="javadoc.dir" value="build/javadocs" />
   <property name="screenshots.build.dir" value="build/screenshots" />
-  
+
+  <property name="jarfile" value="${project.name}-${version}.jar" />
+  <property name="releasefile" value="${project.name}-${version}.zip" />
+
   <target name="compile">
     <javac destdir="${main.build.dir}"
            includes="**/*.java"
@@ -74,22 +81,20 @@
   </target>
 
   <target name="javadocs">
-    <javadoc destdir="${javadoc.dir}"
+    <javadoc sourcepath="${main.src.dir}"
+             excludepackagenames="org.nocrala.tools.utils"
+             destdir="${javadoc.dir}"
              author="true"
              version="true"
              use="true"
              stylesheetfile="src/main/javadoc/javadoc.css"
-             windowtitle="Nocrala Tools">
+             windowtitle="Text Table Formatter">
       <doctitle>Text Table Formatter</doctitle>
       <bottom>&lt;i&gt;Nocrala tools.&lt;/i&gt;</bottom>
       <tag name="todo" scope="all" description="To do:" />
       <classpath>
         <pathelement location="lib/log4j-1.2.9.jar" />
-<!--        
-        <pathelement location="lib/ant.jar" />
--->        
       </classpath>
-      <packageset dir="${main.src.dir}" defaultexcludes="yes" />
     </javadoc>
   </target>
 
@@ -104,7 +109,8 @@
   <target name="clean-build-test" depends="clean, build, test" />
 
   <target name="test">
-    <java classname="org.nocrala.tools.texttablefmt.AllTests" failonerror="true">
+    <java classname="org.nocrala.tools.texttablefmt.AllTests"
+          failonerror="true">
       <classpath>
         <pathelement path="${metadata.dir}" />
         <pathelement path="${main.build.dir}" />
@@ -115,16 +121,27 @@
     </java>
   </target>
 
-  <target name="release" depends="clean-build, javadocs">
+  <target name="generate-screenshots" depends="clean-build, javadocs">
     <java classname="examples.ScreenShots">
       <arg value="${screenshots.build.dir}" />
       <classpath>
         <pathelement path="${metadata.dir}" />
-        <pathelement location="${examples.build.dir}"/>
+        <pathelement location="${examples.build.dir}" />
         <pathelement location="${dist.dir}/${jarfile}" />
         <pathelement location="lib/log4j-1.2.9.jar" />
       </classpath>
     </java>
   </target>
-  
+
+  <target name="release" depends="clean-build, javadocs">
+    <zip destfile="${release.dir}/${releasefile}">
+      <zipfileset file="${dist.dir}/${jarfile}" prefix="lib" />
+      <zipfileset file="lib/log4j-1.2.9.jar" prefix="lib" />
+      <zipfileset file="docs/build.xml" prefix="some-examples" />
+      <zipfileset dir="${examples.src.dir}" prefix="some-examples" />
+      <zipfileset dir="docs/releasedDocs" prefix="docs" />
+      <zipfileset dir="${javadoc.dir}" prefix="docs/javadocs" />
+    </zip>
+  </target>
+
 </project>

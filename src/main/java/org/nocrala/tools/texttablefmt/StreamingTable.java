@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
  * text tables like:</p>
  * 
  * <pre class='example'>
+ * 
  *  +---------+-----------+----------+--------+
  *  |Country  | Population|Area (km2)| Density|
  *  +---------+-----------+----------+--------+
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
  * Therefore it's suitable for rendering large tables.</p>
  * 
  * <p>All column widths default to 10 characters wide. Change this widths as
- * desired BEFORE adding any cell, using the method
+ * desired <b>BEFORE</b> adding any cell, using the method
  * <code>setColumnWidth()</code>.</p>
  * 
  * <p>After adding all cells use the method <code>finishTable()</code> to
@@ -71,6 +72,10 @@ import org.apache.log4j.Logger;
  *  +-------+--------+
  *  </pre>
  * 
+ * <p>The generated table can be customized using a <code>BorderStyle</code>, 
+ * <code>ShownBorders</code> and cell widths. Besides, cell rendering can be 
+ * customized on a cell basis using <code>CellStyle</code>s.</p>  
+ * 
  * @author valarcon
  * 
  */
@@ -94,46 +99,113 @@ public class StreamingTable {
 
   private int currentRowPos;
 
+  /**
+   * Creates a streaming table that will write to an <code>Appendable</code> 
+   * object using <code>BorderStyle.CLASSIC</code> and 
+   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML 
+   * escaping and no left margin.
+   * 
+   * @param appendable Character stream where to write the rendered table.
+   * @param totalColumns Total columns of this table.
+   */
   public StreamingTable(final Appendable appendable, final int totalColumns) {
     initialize(appendable, totalColumns);
     this.tableStyle = new TableStyle(BorderStyle.CLASSIC,
         ShownBorders.SURROUND_HEADER_AND_COLUMNS, false, 0, null);
   }
 
+  /**
+   * Creates a streaming table that will write to an <code>Appendable</code> 
+   * object using a specific border style, showing 
+   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code> separators, no XML 
+   * escaping and no left margin.
+   * 
+   * @param appendable Character stream where to write the rendered table.
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   */
   public StreamingTable(final Appendable appendable, final int totalColumns,
-      final BorderStyle borderTiles) {
+      final BorderStyle borderStyle) {
     initialize(appendable, totalColumns);
-    this.tableStyle = new TableStyle(borderTiles,
+    this.tableStyle = new TableStyle(borderStyle,
         ShownBorders.SURROUND_HEADER_AND_COLUMNS, false, 0, null);
   }
 
+  /**
+   * Creates a streaming table that will write to an <code>Appendable</code> 
+   * object using specific border style and shown borders, no XML 
+   * escaping and no left margin.
+   * 
+   * @param appendable Character stream where to write the rendered table.
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   */
   public StreamingTable(final Appendable appendable, final int totalColumns,
-      final BorderStyle borderTiles, final ShownBorders borderStyle) {
+      final BorderStyle borderStyle, final ShownBorders shownBorders) {
     initialize(appendable, totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, borderStyle, false, 0, null);
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, false, 0, null);
   }
 
+  /**
+   * Creates a streaming table that will write to an <code>Appendable</code> 
+   * object using specific border style, shown borders and XML 
+   * escaping and without left margin.
+   * 
+   * @param appendable Character stream where to write the rendered table.
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   * @param escapeXml Specifies if the rendered text should be escaped using 
+   * XML entities.
+   */
   public StreamingTable(final Appendable appendable, final int totalColumns,
-      final BorderStyle borderTiles, final ShownBorders borderStyle,
+      final BorderStyle borderStyle, final ShownBorders shownBorders,
       final boolean escapeXml) {
     initialize(appendable, totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, borderStyle, escapeXml, 0,
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, escapeXml, 0,
         null);
   }
 
+  /**
+   * Creates a streaming table that will write to an <code>Appendable</code> 
+   * object using specific border style, shown borders, XML 
+   * escaping and left margin.
+   * 
+   * @param appendable Character stream where to write the rendered table.
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   * @param escapeXml Specifies if the rendered text should be escaped using 
+   * XML entities.
+   * @param leftMargin Specifies how many blank spaces will be used as a left margin for the table.
+   */
   public StreamingTable(final Appendable appendable, final int totalColumns,
-      final BorderStyle borderTiles, final ShownBorders borderStyle,
+      final BorderStyle borderStyle, final ShownBorders shownBorders,
       final boolean escapeXml, final int leftMargin) {
     initialize(appendable, totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, borderStyle, escapeXml,
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, escapeXml,
         leftMargin, null);
   }
 
+  /**
+   * Creates a streaming table that will write to an <code>Appendable</code> 
+   * object using specific border style, shown borders, XML 
+   * escaping and left margin.
+   * 
+   * @param appendable Character stream where to write the rendered table.
+   * @param totalColumns Total columns of this table.
+   * @param borderStyle The border style to use when rendering the table.
+   * @param shownBorders Specifies which borders will be rendered.
+   * @param escapeXml Specifies if the rendered text should be escaped using 
+   * XML entities.
+   * @param prompt Text to use as left margin for the table.
+   */
   public StreamingTable(final Appendable appendable, final int totalColumns,
-      final BorderStyle borderTiles, final ShownBorders borderStyle,
+      final BorderStyle borderStyle, final ShownBorders shownBorders,
       final boolean escapeXml, final String prompt) {
     initialize(appendable, totalColumns);
-    this.tableStyle = new TableStyle(borderTiles, borderStyle, escapeXml, 0,
+    this.tableStyle = new TableStyle(borderStyle, shownBorders, escapeXml, 0,
         prompt);
   }
 
