@@ -205,8 +205,9 @@ class TableStyle {
                 + this.borderStyle.getRightWidth());
             Log.debug("this.borderTiles.getHorizontalWidth()="
                 + this.borderStyle.getHorizontalWidth());
-            sb.append(this.borderStyle.getCenter());
           }
+          
+          sb.append(this.borderStyle.getCenter());
         }
       }
 

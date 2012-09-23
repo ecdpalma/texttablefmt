@@ -14,7 +14,7 @@
     <mkdir dir="${release.dir}" />
   </target>
 
-  <target name="clean">
+  <target name="clean" depends="init">
     <delete includeEmptyDirs="true">
       <fileset dir="${release.dir}" includes="**/*" />
     </delete>

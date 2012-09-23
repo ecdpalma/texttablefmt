@@ -58,7 +58,7 @@ public class TableTests extends TestCase {
     Table t = new Table(2, BorderStyle.CLASSIC, ShownBorders.ALL, false, "");
     t.addCell("abcdef", cs);
     t.addCell("123456", cs);
-    // logger.debug("t=" + t.render());
+    Log.debug("t=\n" + t.render());
     assertEquals("" //
         + "+------+------+\n" //
         + "|abcdef|123456|\n" //
