@@ -3,11 +3,9 @@ package org.nocrala.tools.texttablefmt;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.nocrala.tools.utils.Log;
 
 class Column {
-
-  private static Logger logger = Logger.getLogger(Column.class);
 
   private int colIndex;
 
@@ -47,12 +45,12 @@ class Column {
         for (int pos = this.colIndex - cell.getColSpan() + 1; pos < this.colIndex; pos++) {
           previousWidth = previousWidth + columns.get(pos).getColumnWidth()
               + separatorWidth;
-          logger.debug("pos[" + pos + "] --> " + previousWidth);
+          Log.debug("pos[" + pos + "] --> " + previousWidth);
         }
       }
       int cellTightWidth = cell != null ? cell.getTightWidth(this.maxWidth) : 0;
       int tw = cellTightWidth - previousWidth;
-      logger.debug("cellTightWidth=" + cellTightWidth + " tw=" + tw);
+      Log.debug("cellTightWidth=" + cellTightWidth + " tw=" + tw);
       if (tw > this.width) {
         this.width = tw;
       }

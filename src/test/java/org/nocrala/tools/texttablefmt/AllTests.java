@@ -4,11 +4,9 @@ import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-import org.apache.log4j.Logger;
+import org.nocrala.tools.utils.Log;
 
 public class AllTests {
-
-  private static Logger logger = Logger.getLogger(AllTests.class);
 
   public static Test suite() {
     TestSuite ts = new TestSuite();
@@ -21,7 +19,7 @@ public class AllTests {
   }
 
   public static void main(final String[] args) {
-    logger.debug("Starting tests...");
+    Log.debug("Starting tests...");
     Test ts = suite();
     TestResult tr = junit.textui.TestRunner.run(ts);
     if (!tr.wasSuccessful()) {

@@ -2,27 +2,35 @@ package org.nocrala.tools.texttablefmt;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.nocrala.tools.utils.Filler;
+import org.nocrala.tools.utils.Log;
 
 /**
- * <p>A ShownBorders define which borders and internal separators are
- * rendered.</p>
+ * <p>
+ * A ShownBorders define which borders and internal separators are rendered.
+ * </p>
  * 
- * <p>A ShownBorders does not control the specific characters (tiles) that
- * will be used to render those borders; a BorderStyle is used to define those
- * ones.</p>
+ * <p>
+ * A ShownBorders does not control the specific characters (tiles) that will be
+ * used to render those borders; a BorderStyle is used to define those ones.
+ * </p>
  * 
- * <p>You can use predefined styles or custom styles.</p>
+ * <p>
+ * You can use predefined styles or custom styles.
+ * </p>
  * 
  * <h3>Predefined Styles</h3>
  * 
- * <p>Below all predefined ShownBorders are listed with examples. For simplicity 
- * and clarity, all these examples use the style BorderStyle.CLASSIC, but they work 
- * with any BorderStyle:</p>
+ * <p>
+ * Below all predefined ShownBorders are listed with examples. For simplicity
+ * and clarity, all these examples use the style BorderStyle.CLASSIC, but they
+ * work with any BorderStyle:
+ * </p>
  * 
  * 
- * <p><b>ShownBorders.ALL</b></p>
+ * <p>
+ * <b>ShownBorders.ALL</b>
+ * </p>
  * 
  * <pre class='example'>
  *  +---------+----------+----------+-------+
@@ -37,7 +45,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.NONE</b></p>
+ * <p>
+ * <b>ShownBorders.NONE</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  PopulationArea (km2)Density
@@ -47,7 +57,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b><u>Default:</u> ShownBorders.SURROUND_HEADER_AND_COLUMNS</b></p>
+ * <p>
+ * <b><u>Default:</u> ShownBorders.SURROUND_HEADER_AND_COLUMNS</b>
+ * </p>
  * 
  * <pre class='example'>
  *  +---------+----------+----------+-------+
@@ -59,7 +71,9 @@ import org.nocrala.tools.utils.Filler;
  *  +---------+----------+----------+-------+
  * </pre>
  * 
- * <p><b>ShownBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS</b></p>
+ * <p>
+ * <b>ShownBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS</b>
+ * </p>
  * 
  * <pre class='example'>
  *  +---------+-----------+----------+-------+
@@ -73,7 +87,9 @@ import org.nocrala.tools.utils.Filler;
  *  +---------+-----------+----------+-------+
  * </pre>
  * 
- * <p><b>ShownBorders.SURROUND</b></p>
+ * <p>
+ * <b>ShownBorders.SURROUND</b>
+ * </p>
  * 
  * <pre class='example'>
  *  +------------------------------------+
@@ -85,7 +101,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_AND_COLUMNS</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_AND_COLUMNS</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  |Population|Area (km2)|Density
@@ -96,7 +114,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_FOOTER_AND_COLUMNS</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_FOOTER_AND_COLUMNS</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  |Population|Area (km2)|Density
@@ -108,7 +128,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_AND_FOOTER</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_AND_FOOTER</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  PopulationArea (km2)Density
@@ -120,7 +142,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_AND_FIRST_COLLUMN</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_AND_FIRST_COLLUMN</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)Density
@@ -131,7 +155,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_FIRST_AND_LAST_COLLUMN</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_FIRST_AND_LAST_COLLUMN</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)|Density
@@ -142,7 +168,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_FOOTER_AND_FIRST_COLLUMN</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_FOOTER_AND_FIRST_COLLUMN</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)Density
@@ -154,7 +182,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_FOOTER_FIRST_AND_LAST_COLLUMN</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_FOOTER_FIRST_AND_LAST_COLLUMN</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country  |PopulationArea (km2)|Density
@@ -166,9 +196,14 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * <br>
- * <p>In combination with a BorderStyle you can render cleaner tables, like in the following examples:</p>
+ * <p>
+ * In combination with a BorderStyle you can render cleaner tables, like in the
+ * following examples:
+ * </p>
  * 
- * <p><b>ShownBorders.HEADER_FOOTER_AND_COLUMNS, BorderStyle.HORIZONTAL_ONLY</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_FOOTER_AND_COLUMNS, BorderStyle.HORIZONTAL_ONLY</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country   Population Area (km2) Density
@@ -180,7 +215,9 @@ import org.nocrala.tools.utils.Filler;
  * </pre>
  * 
  * 
- * <p><b>ShownBorders.HEADER_ONLY, BorderStyle.HORIZONTAL_ONLY</b></p>
+ * <p>
+ * <b>ShownBorders.HEADER_ONLY, BorderStyle.HORIZONTAL_ONLY</b>
+ * </p>
  * 
  * <pre class='example'>
  *  Country   Population Area (km2) Density
@@ -190,13 +227,17 @@ import org.nocrala.tools.utils.Filler;
  *  Brasil    80 000 000  5 000 000   16.00
  * </pre>
  * 
- *
- * <p>If no predefined style fits your needs, you can use a...</p>
+ * 
+ * <p>
+ * If no predefined style fits your needs, you can use a...
+ * </p>
  * 
  * <h3>Custom styles</h3>
  * 
- * <p> You can separately control the rendering of the following borders and
- * separators, using a custom style: </p>
+ * <p>
+ * You can separately control the rendering of the following borders and
+ * separators, using a custom style:
+ * </p>
  * 
  * <pre class='example'>
  *       +- top border --------+----------+----------+----------+
@@ -215,18 +256,27 @@ import org.nocrala.tools.utils.Filler;
  *       |                   left         |        right        | 
  *       |                 separator      |      separator      |
  *       |                     |          |          |          |
- *       +- bottom border -----+----------+----------+----------+       
+ *       +- bottom border -----+----------+----------+----------+
  * </pre>
  * 
- * <p>For vertical separators, there is a single left border, left separator, right separator and right
- * border. All separator inside them are considered center separators.
- * Similarly, for horizontal separator there can be many middle separators.</p>
+ * <p>
+ * For vertical separators, there is a single left border, left separator, right
+ * separator and right border. All separator inside them are considered center
+ * separators. Similarly, for horizontal separator there can be many middle
+ * separators.
+ * </p>
  * 
- * <p>For example, you can use:</p>
+ * <p>
+ * For example, you can use:
+ * </p>
  * 
- * <pre class='example'>    new ShownBorders("t.t.t.t.t.")</pre>
+ * <pre class='example'>
+ * new ShownBorders(&quot;t.t.t.t.t.&quot;)
+ * </pre>
  * 
- * <p>to generate a table like:</p>
+ * <p>
+ * to generate a table like:
+ * </p>
  * 
  * <pre class='example'>
  *    +-------------------+-----------------
@@ -238,13 +288,14 @@ import org.nocrala.tools.utils.Filler;
  *    |Brasil   80 000 000| 5 000 000  16.00
  * </pre>
  * 
- * <p>Use any combination of <code>'t'</code> and <code>'.'</code> that fits your needs.</p>
+ * <p>
+ * Use any combination of <code>'t'</code> and <code>'.'</code> that fits your
+ * needs.
+ * </p>
  * 
  */
 
 public class ShownBorders {
-
-  private static Logger logger = Logger.getLogger(ShownBorders.class);
 
   /** Renders no border nor separator. */
   public static final ShownBorders NONE = new ShownBorders("..........");
@@ -357,14 +408,27 @@ public class ShownBorders {
    * Creates a custom border style using a 10-character String.
    * 
    * @param separatorsAndBordersToRender
-   *          <p> A ten character string. Every character whose value is 't'
+   *          <p>
+   *          A ten character string. Every character whose value is 't'
    *          represents a true value for the following borders or separators,
-   *          in the following order: </p> <ul> <li>headerSeparator,</li> <li>middleSeparator,</li>
-   *          <li>footerSeparator,</li> <li>leftSeparator,</li> <li>centerSeparator,</li>
-   *          <li>rightSeparator,</li> <li>topBorder,</li> <li>bottomBorder,</li>
-   *          <li>leftBorder,</li> <li>rightBorder.</li> </ul> <p> For
-   *          example, a "......tttt" String will represent a borders-only
-   *          style, </p>
+   *          in the following order:
+   *          </p>
+   *          <ul>
+   *          <li>headerSeparator,</li>
+   *          <li>middleSeparator,</li>
+   *          <li>footerSeparator,</li>
+   *          <li>leftSeparator,</li>
+   *          <li>centerSeparator,</li>
+   *          <li>rightSeparator,</li>
+   *          <li>topBorder,</li>
+   *          <li>bottomBorder,</li>
+   *          <li>leftBorder,</li>
+   *          <li>rightBorder.</li>
+   *          </ul>
+   *          <p>
+   *          For example, a "......tttt" String will represent a borders-only
+   *          style,
+   *          </p>
    */
 
   public ShownBorders(final String separatorsAndBordersToRender) {
@@ -394,24 +458,24 @@ public class ShownBorders {
 
   String renderTopBorder(final List<Column> columns, final BorderStyle tiles,
       final Row lowerRow) {
-    return renderHorizontalSeparator(columns, tiles.getTLCorner(), tiles
-        .getTCCorner(), tiles.getTRCorner(), tiles.getTop(), null, lowerRow,
-        null, tiles.getTCCorner(), tiles.getCenterWidth());
+    return renderHorizontalSeparator(columns, tiles.getTLCorner(),
+        tiles.getTCCorner(), tiles.getTRCorner(), tiles.getTop(), null,
+        lowerRow, null, tiles.getTCCorner(), tiles.getCenterWidth());
   }
 
   String renderMiddleSeparator(final List<Column> columns,
       final BorderStyle tiles, final Row upperRow, final Row lowerRow) {
-    return renderHorizontalSeparator(columns, tiles.getMLCorner(), tiles
-        .getMCCorner(), tiles.getMRCorner(), tiles.getMiddle(), upperRow,
-        lowerRow, tiles.getUpperColSpan(), tiles.getLowerColSpan(), tiles
-            .getCenterWidth());
+    return renderHorizontalSeparator(columns, tiles.getMLCorner(),
+        tiles.getMCCorner(), tiles.getMRCorner(), tiles.getMiddle(), upperRow,
+        lowerRow, tiles.getUpperColSpan(), tiles.getLowerColSpan(),
+        tiles.getCenterWidth());
   }
 
   String renderBottomBorder(final List<Column> columns,
       final BorderStyle tiles, final Row upperRow) {
-    return renderHorizontalSeparator(columns, tiles.getBLCorner(), tiles
-        .getBCCorner(), tiles.getBRCorner(), tiles.getBottom(), upperRow, null,
-        tiles.getBCCorner(), null, tiles.getCenterWidth());
+    return renderHorizontalSeparator(columns, tiles.getBLCorner(),
+        tiles.getBCCorner(), tiles.getBRCorner(), tiles.getBottom(), upperRow,
+        null, tiles.getBCCorner(), null, tiles.getCenterWidth());
   }
 
   private String renderHorizontalSeparator(final List<Column> columns,
@@ -437,7 +501,7 @@ public class ShownBorders {
       boolean upperSep = upperRow != null ? upperRow.hasSeparator(j) : false;
       boolean lowerSep = lowerRow != null ? lowerRow.hasSeparator(j) : false;
 
-      logger.debug("upperSep=" + upperSep + " lowerSep=" + lowerSep
+      Log.debug("upperSep=" + upperSep + " lowerSep=" + lowerSep
           + " centerWidth=" + centerWidth);
 
       if (j != 0) {
@@ -455,7 +519,7 @@ public class ShownBorders {
             if (lowerSep) {
               sb.append(lowerColSpan);
             } else {
-              logger.debug("centerWidth=" + centerWidth);
+              Log.debug("centerWidth=" + centerWidth);
               for (int i = 0; i < centerWidth; i++) {
                 sb.append(horizontal);
               }

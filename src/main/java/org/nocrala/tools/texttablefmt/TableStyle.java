@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.nocrala.tools.utils.TextEncoder;
 import org.nocrala.tools.utils.Filler;
+import org.nocrala.tools.utils.Log;
+import org.nocrala.tools.utils.TextEncoder;
 
 class TableStyle {
-
-  private static Logger logger = Logger.getLogger(TableStyle.class);
 
   private ShownBorders shownBorders;
 
@@ -134,25 +132,27 @@ class TableStyle {
     List<String> list = new ArrayList<String>();
     if (isFirst) {
       if (this.shownBorders.showTopBorder()) {
-        list.add(escapeXmlIfRequired(this.prompt, this.shownBorders
-            .renderTopBorder(columns, this.borderStyle, r)));
+        list.add(escapeXmlIfRequired(this.prompt,
+            this.shownBorders.renderTopBorder(columns, this.borderStyle, r)));
       }
     } else {
       if (isIntermediate && this.shownBorders.showMiddleSeparator() || //
-          isSecond && this.shownBorders.showHeaderSeparator() // 
+          isSecond && this.shownBorders.showHeaderSeparator() //
           || isLast && this.shownBorders.showFooterSeparator()) {
         list.add(escapeXmlIfRequired(this.prompt, this.shownBorders
             .renderMiddleSeparator(columns, this.borderStyle, previousRow, r)));
       }
     }
 
-    logger.debug("+++++++ r.getSize()=" + r.getSize());
+    if (Log.isDebugEnabled()) {
+      Log.debug("+++++++ r.getSize()=" + r.getSize());
+    }
     list.add(escapeXmlIfRequired(this.prompt, renderContentRow(r, columns)));
 
     if (isLast) {
       if (this.shownBorders.showBottomBorder()) {
-        list.add(escapeXmlIfRequired(this.prompt, this.shownBorders
-            .renderBottomBorder(columns, this.borderStyle, r)));
+        list.add(escapeXmlIfRequired(this.prompt,
+            this.shownBorders.renderBottomBorder(columns, this.borderStyle, r)));
       }
     }
 
@@ -176,32 +176,37 @@ class TableStyle {
 
       // cell separator
 
-      logger.debug("j=" + j);
-      logger.debug("this.shownBorders.showCenterSeparator()="
-          + this.shownBorders.showCenterSeparator());
-      logger.debug("this.shownBorders.showLeftSeparator()="
-          + this.shownBorders.showLeftSeparator());
-      logger.debug("this.shownBorders.showRightSeparator()="
-          + this.shownBorders.showRightSeparator());
-      logger.debug("this.borderTiles.getCenter()="
-          + this.borderStyle.getCenter());
+      if (Log.isDebugEnabled()) {
+        Log.debug("j=" + j);
+        Log.debug("this.shownBorders.showCenterSeparator()="
+            + this.shownBorders.showCenterSeparator());
+        Log.debug("this.shownBorders.showLeftSeparator()="
+            + this.shownBorders.showLeftSeparator());
+        Log.debug("this.shownBorders.showRightSeparator()="
+            + this.shownBorders.showRightSeparator());
+        Log.debug("this.borderTiles.getCenter()="
+            + this.borderStyle.getCenter());
+      }
       if (j != 0) {
         if ((j > 1 && j < totalColumns - 1)
             && this.shownBorders.showCenterSeparator()
             || ((j == 1) && (this.shownBorders.showLeftSeparator()))
             || ((j == (totalColumns - 1)) && (this.shownBorders
                 .showRightSeparator()))) {
-          logger.debug("--- appending '" + this.borderStyle.getCenter()
-              + "' ---");
-          logger.debug("this.borderTiles.getLeftWidth()="
-              + this.borderStyle.getLeftWidth());
-          logger.debug("this.borderTiles.getCenterWidth()="
-              + this.borderStyle.getCenterWidth());
-          logger.debug("this.borderTiles.getRightWidth()="
-              + this.borderStyle.getRightWidth());
-          logger.debug("this.borderTiles.getHorizontalWidth()="
-              + this.borderStyle.getHorizontalWidth());
-          sb.append(this.borderStyle.getCenter());
+
+          if (Log.isDebugEnabled()) {
+            Log.debug("--- appending '" + this.borderStyle.getCenter()
+                + "' ---");
+            Log.debug("this.borderTiles.getLeftWidth()="
+                + this.borderStyle.getLeftWidth());
+            Log.debug("this.borderTiles.getCenterWidth()="
+                + this.borderStyle.getCenterWidth());
+            Log.debug("this.borderTiles.getRightWidth()="
+                + this.borderStyle.getRightWidth());
+            Log.debug("this.borderTiles.getHorizontalWidth()="
+                + this.borderStyle.getHorizontalWidth());
+            sb.append(this.borderStyle.getCenter());
+          }
         }
       }
 
@@ -209,16 +214,19 @@ class TableStyle {
 
       int sepWidth = this.borderStyle.getCenter().length();
       int width = -sepWidth;
-      logger.debug("* width=" + width);
+      Log.debug("* width=" + width);
       for (int pos = j; pos < j + cell.getColSpan(); pos++) {
         width = width + sepWidth + columns.get(pos).getColumnWidth();
-        logger.debug("** columns.get(" + j + ").getColumnWidth()="
+        Log.debug("** columns.get(" + j + ").getColumnWidth()="
             + columns.get(pos).getColumnWidth() + "  width=" + width);
       }
-      logger.debug("*** width=" + width);
+      Log.debug("*** width=" + width);
       String renderedCell = cell.render(width);
-      logger.debug("content='" + cell.getContent() + "' --> renderedCell="
-          + renderedCell);
+
+      if (Log.isDebugEnabled()) {
+        Log.debug("content='" + cell.getContent() + "' --> renderedCell="
+            + renderedCell);
+      }
       sb.append(renderedCell);
 
       j = j + cell.getColSpan();

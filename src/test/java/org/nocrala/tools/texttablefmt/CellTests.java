@@ -2,14 +2,13 @@ package org.nocrala.tools.texttablefmt;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.nocrala.tools.texttablefmt.CellStyle.AbbreviationStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.CellStyle.NullStyle;
+import org.nocrala.tools.utils.Log;
 
 public class CellTests extends TestCase {
 
-  private static Logger logger = Logger.getLogger(CellTests.class);
 
   public CellTests(final String txt) {
     super(txt);
@@ -98,7 +97,7 @@ public class CellTests extends TestCase {
   }
 
   public void testNullEmpty() {
-    logger.debug("Null");
+    Log.debug("Null");
     CellStyle cs = new CellStyle(HorizontalAlign.left, AbbreviationStyle.crop,
         NullStyle.emptyString);
     Cell c = new Cell(null, cs, 1);

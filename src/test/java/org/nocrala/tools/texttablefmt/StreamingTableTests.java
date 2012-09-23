@@ -4,21 +4,19 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.nocrala.tools.texttablefmt.CellStyle.AbbreviationStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.CellStyle.NullStyle;
+import org.nocrala.tools.utils.Log;
 
 public class StreamingTableTests extends TestCase {
-
-  private static Logger logger = Logger.getLogger(StreamingTableTests.class);
 
   public StreamingTableTests(final String txt) {
     super(txt);
   }
 
   public void testEmpty() throws IOException {
-    logger.debug("Empty");
+    Log.debug("Empty");
     StringBuffer sb = new StringBuffer();
     StreamingTable t = new StreamingTable(sb, 10, BorderStyle.CLASSIC,
         ShownBorders.ALL, false, "");
@@ -32,12 +30,12 @@ public class StreamingTableTests extends TestCase {
     StringBuffer sb = new StringBuffer();
     StreamingTable t = new StreamingTable(sb, 1, BorderStyle.CLASSIC,
         ShownBorders.ALL, false, "");
-    logger.debug("width[0]= " + t.getColumn(0).getColumnWidth());
+    Log.debug("width[0]= " + t.getColumn(0).getColumnWidth());
     t.setColumnWidth(0, 11);
     t.addCell("abcdef", cs);
 
     t.finishTable();
-    logger.info("sb=\n" + sb.toString());
+    Log.info("sb=\n" + sb.toString());
     assertEquals("" //
         + "+-----------+\n" //
         + "|abcdef     |\n" //
@@ -94,8 +92,8 @@ public class StreamingTableTests extends TestCase {
     t.addCell("123456", cs);
     t.finishTable();
     assertEquals("    +----------+\n" + "    |abcdef    |\n"
-        + "    +----------+\n" + "    |123456    |\n" + "    +----------+", sb
-        .toString());
+        + "    +----------+\n" + "    |123456    |\n" + "    +----------+",
+        sb.toString());
   }
 
   public void testAutomaticWidth() throws IOException {
@@ -113,11 +111,11 @@ public class StreamingTableTests extends TestCase {
     t.finishTable();
     assertEquals("" //
         + "+----------+----------+\n" //
-        + "|abcdef    |123456    |\n" // 
-        + "+----------+----------+\n" // 
-        + "|mno       |45689     |\n" // 
-        + "+----------+----------+\n" // 
-        + "|xyztuvw   |01234567  |\n" // 
+        + "|abcdef    |123456    |\n" //
+        + "+----------+----------+\n" //
+        + "|mno       |45689     |\n" //
+        + "+----------+----------+\n" //
+        + "|xyztuvw   |01234567  |\n" //
         + "+----------+----------+", sb.toString());
   }
 
@@ -138,11 +136,11 @@ public class StreamingTableTests extends TestCase {
     t.addCell("01234567", cs);
     t.finishTable();
     assertEquals("+------+-------+\n" //
-        + "|abcd  |123456 |\n" // 
-        + "+------+-------+\n" // 
-        + "|mno   |45689  |\n" // 
-        + "+------+-------+\n" // 
-        + "|xyztu |0123456|\n" // 
+        + "|abcd  |123456 |\n" //
+        + "+------+-------+\n" //
+        + "|mno   |45689  |\n" //
+        + "+------+-------+\n" //
+        + "|xyztu |0123456|\n" //
         + "+------+-------+", sb.toString());
   }
 

@@ -3,11 +3,9 @@ package org.nocrala.tools.texttablefmt;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.nocrala.tools.utils.Log;
 
 class Row {
-
-  private static Logger logger = Logger.getLogger(Row.class);
 
   private List<Cell> cells;
 
@@ -21,16 +19,16 @@ class Row {
   }
 
   public boolean hasSeparator(final int pos) {
-    logger.debug("----> pos=" + pos);
+    Log.debug("----> pos=" + pos);
     if (pos == 0) {
       return true;
     }
     int i = 0;
     for (Cell cell : this.cells) {
-      logger.debug("i=" + i);
+      Log.debug("i=" + i);
       if (i < pos) {
         if (i + cell.getColSpan() > pos) {
-          logger.debug("TRUE");
+          Log.debug("TRUE");
           return false;
         }
       } else {

@@ -2,21 +2,19 @@ package org.nocrala.tools.texttablefmt;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.nocrala.tools.texttablefmt.CellStyle.AbbreviationStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.CellStyle.NullStyle;
+import org.nocrala.tools.utils.Log;
 
 public class RowTests extends TestCase {
-
-  private static Logger logger = Logger.getLogger(RowTests.class);
 
   public RowTests(final String txt) {
     super(txt);
   }
 
   public void testSeparators() {
-    logger.debug("Separators");
+    Log.debug("Separators");
     CellStyle cs = new CellStyle(HorizontalAlign.left, AbbreviationStyle.crop,
         NullStyle.emptyString);
     Row r = new Row();

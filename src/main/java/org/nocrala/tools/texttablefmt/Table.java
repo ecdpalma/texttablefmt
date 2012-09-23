@@ -3,11 +3,12 @@ package org.nocrala.tools.texttablefmt;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.nocrala.tools.utils.Log;
 
 /**
- * <p>In-memory text table generator. This class will generate text tables
- * like:</p>
+ * <p>
+ * In-memory text table generator. This class will generate text tables like:
+ * </p>
  * 
  * <pre class='example'>
  * 
@@ -20,43 +21,55 @@ import org.apache.log4j.Logger;
  *  +---------+-----------+----------+--------+
  *  |Total    |147 000 000| 9 250 000|   15.89|
  *  +---------+-----------+----------+--------+
- *  </pre>
+ * </pre>
  * 
- * <p>where the border style, shown borders/separators, column
- * widths, alignments and other are configurable.</p>
+ * <p>
+ * where the border style, shown borders/separators, column widths, alignments
+ * and other are configurable.
+ * </p>
  * 
- * <p>Cells are added using the <code>addCell()</code> method and finally
- * rendered as a String using the <code>render()</code> method.</p>
+ * <p>
+ * Cells are added using the <code>addCell()</code> method and finally rendered
+ * as a String using the <code>render()</code> method.
+ * </p>
  * 
- * <p>The entire table is built in memory, so this class is not intended for a massive
- * numbers of rows/cells. Although the maximum size of the in-memory table depends on
- * the amount of available memory the JVM has, as a rule of thumb, don't exceed
- * 10.000 total cells. If you need to render a bigger table, use the 
- * <code>StreamingTable</code> class instead.</p>
+ * <p>
+ * The entire table is built in memory, so this class is not intended for a
+ * massive numbers of rows/cells. Although the maximum size of the in-memory
+ * table depends on the amount of available memory the JVM has, as a rule of
+ * thumb, don't exceed 10.000 total cells. If you need to render a bigger table,
+ * use the <code>StreamingTable</code> class instead.
+ * </p>
  * 
- * <p>If no widths are specified for a column, its width will adjusted to the
- * wider cell in the column.</p>
+ * <p>
+ * If no widths are specified for a column, its width will adjusted to the wider
+ * cell in the column.
+ * </p>
  * 
- * <p>As an example, the following code:</p>
+ * <p>
+ * As an example, the following code:
+ * </p>
+ * 
+ * <pre class='example'>
+ * 
+ * CellStyle cs = new CellStyle(HorizontalAlign.left, AbbreviationStyle.crop,
+ *     NullStyle.emptyString);
+ * Table t = new Table(2, BorderStyle.CLASSIC, ShownBorders.ALL, false, &quot;&quot;);
+ * t.addCell(&quot;abcdef&quot;, cs);
+ * t.addCell(&quot;123456&quot;, cs);
+ * t.addCell(&quot;mno&quot;, cs);
+ * t.addCell(&quot;45689&quot;, cs);
+ * t.addCell(&quot;xyztuvw&quot;, cs);
+ * t.addCell(&quot;01234567&quot;, cs);
+ * System.out.println(t.render());
+ * </pre>
+ * 
+ * <p>
+ * will generate the table:
+ * </p>
  * 
  * <pre class='example'>
  * 
- *  CellStyle cs = new CellStyle(HorizontalAlign.left, AbbreviationStyle.crop,
- *      NullStyle.emptyString);
- *  Table t = new Table(2, BorderStyle.CLASSIC, ShownBorders.ALL, false, "");
- *  t.addCell("abcdef", cs);
- *  t.addCell("123456", cs);
- *  t.addCell("mno", cs);
- *  t.addCell("45689", cs);
- *  t.addCell("xyztuvw", cs);
- *  t.addCell("01234567", cs);
- *  System.out.println(t.render());
- *  </pre>
- * 
- * <p>will generate the table:</p>
- * 
- * <pre class='example'>
- *  
  *  +-------+--------+
  *  |abcdef |123456  | 
  *  +-------+--------+ 
@@ -64,18 +77,18 @@ import org.apache.log4j.Logger;
  *  +-------+--------+ 
  *  |xyztuvw|01234567| 
  *  +-------+--------+
- *  </pre>
+ * </pre>
  * 
- * <p>The generated table can be customized using a <code>BorderStyle</code>, 
- * <code>ShownBorders</code> and cell widths. Besides, cell rendering can be 
- * customized on a cell basis using <code>CellStyle</code>s.</p>  
+ * <p>
+ * The generated table can be customized using a <code>BorderStyle</code>,
+ * <code>ShownBorders</code> and cell widths. Besides, cell rendering can be
+ * customized on a cell basis using <code>CellStyle</code>s.
+ * </p>
  * 
  * @author valarcon
  * 
  */
 public class Table {
-
-  private static Logger logger = Logger.getLogger(Table.class);
 
   private static final int DEFAULT_MIN_WIDTH = 0;
 
@@ -94,11 +107,12 @@ public class Table {
   private Row currentRow;
 
   /**
-   * Creates a table using <code>BorderStyle.CLASSIC</code> and 
-   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML 
-   * escaping and no left margin.
-   *  
-   * @param totalColumns Total columns of this table. 
+   * Creates a table using <code>BorderStyle.CLASSIC</code> and
+   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML escaping and
+   * no left margin.
+   * 
+   * @param totalColumns
+   *          Total columns of this table.
    */
   public Table(final int totalColumns) {
     initialize(totalColumns);
@@ -107,26 +121,31 @@ public class Table {
   }
 
   /**
-   * Creates a table using the specified border style and 
-   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML 
-   * escaping and no left margin.
+   * Creates a table using the specified border style and
+   * <code>ShownBorders.SURROUND_HEADER_AND_COLUMNS</code>, no XML escaping and
+   * no left margin.
    * 
-   * @param totalColumns Total columns of this table.
-   * @param borderStyle The border style to use when rendering the table.
+   * @param totalColumns
+   *          Total columns of this table.
+   * @param borderStyle
+   *          The border style to use when rendering the table.
    */
   public Table(final int totalColumns, final BorderStyle borderStyle) {
     initialize(totalColumns);
     this.tableStyle = new TableStyle(borderStyle,
         ShownBorders.SURROUND_HEADER_AND_COLUMNS, false, 0, null);
   }
-  
+
   /**
-   * Creates a table using the specified border style and shown borders, 
-   * with no XML escaping and no left margin.
+   * Creates a table using the specified border style and shown borders, with no
+   * XML escaping and no left margin.
    * 
-   * @param totalColumns Total columns of this table.
-   * @param borderStyle The border style to use when rendering the table.
-   * @param shownBorders Specifies which borders will be rendered.
+   * @param totalColumns
+   *          Total columns of this table.
+   * @param borderStyle
+   *          The border style to use when rendering the table.
+   * @param shownBorders
+   *          Specifies which borders will be rendered.
    */
 
   public Table(final int totalColumns, final BorderStyle borderStyle,
@@ -136,14 +155,18 @@ public class Table {
   }
 
   /**
-   * Creates a table using the specified border style and shown borders, 
-   * XML escaping and no left margin.
+   * Creates a table using the specified border style and shown borders, XML
+   * escaping and no left margin.
    * 
-   * @param totalColumns Total columns of this table.
-   * @param borderStyle The border style to use when rendering the table.
-   * @param shownBorders Specifies which borders will be rendered.
-   * @param escapeXml Specifies if the rendered text should be escaped using 
-   * XML entities.
+   * @param totalColumns
+   *          Total columns of this table.
+   * @param borderStyle
+   *          The border style to use when rendering the table.
+   * @param shownBorders
+   *          Specifies which borders will be rendered.
+   * @param escapeXml
+   *          Specifies if the rendered text should be escaped using XML
+   *          entities.
    */
   public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders, final boolean escapeXml) {
@@ -153,15 +176,21 @@ public class Table {
   }
 
   /**
-   * Creates a table using the specified border style and shown borders, 
-   * XML escaping and left margin.
+   * Creates a table using the specified border style and shown borders, XML
+   * escaping and left margin.
    * 
-   * @param totalColumns Total columns of this table.
-   * @param borderStyle The border style to use when rendering the table.
-   * @param shownBorders Specifies which borders will be rendered.
-   * @param escapeXml Specifies if the rendered text should be escaped using 
-   * XML entities.
-   * @param leftMargin Specifies how many blank spaces to use as a left margin for the table.
+   * @param totalColumns
+   *          Total columns of this table.
+   * @param borderStyle
+   *          The border style to use when rendering the table.
+   * @param shownBorders
+   *          Specifies which borders will be rendered.
+   * @param escapeXml
+   *          Specifies if the rendered text should be escaped using XML
+   *          entities.
+   * @param leftMargin
+   *          Specifies how many blank spaces to use as a left margin for the
+   *          table.
    */
   public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders, final boolean escapeXml,
@@ -172,15 +201,20 @@ public class Table {
   }
 
   /**
-   * Creates a table using the specified border style and shown borders, 
-   * XML escaping and left margin.
+   * Creates a table using the specified border style and shown borders, XML
+   * escaping and left margin.
    * 
-   * @param totalColumns Total columns of this table.
-   * @param borderStyle The border style to use when rendering the table.
-   * @param shownBorders Specifies which borders will be rendered.
-   * @param escapeXml Specifies if the rendered text should be escaped using 
-   * XML entities.
-   * @param prompt Text to use as left margin for the table.
+   * @param totalColumns
+   *          Total columns of this table.
+   * @param borderStyle
+   *          The border style to use when rendering the table.
+   * @param shownBorders
+   *          Specifies which borders will be rendered.
+   * @param escapeXml
+   *          Specifies if the rendered text should be escaped using XML
+   *          entities.
+   * @param prompt
+   *          Text to use as left margin for the table.
    */
   public Table(final int totalColumns, final BorderStyle borderStyle,
       final ShownBorders shownBorders, final boolean escapeXml,
@@ -202,15 +236,18 @@ public class Table {
   }
 
   /**
-   * Sets the minimum and maximum desired column widths of a specific column. If 
-   * no width range is specified for a column, its width will be adjusted to the 
+   * Sets the minimum and maximum desired column widths of a specific column. If
+   * no width range is specified for a column, its width will be adjusted to the
    * wider cell in the column.
    * 
-   * @param col Column whose desired widths will be set. First column is 0
-   * (zero).</p>
-
-   * @param minWidth Minimum desired width.
-   * @param maxWidth Maximum desired width.
+   * @param col
+   *          Column whose desired widths will be set. First column is 0
+   *          (zero).</p>
+   * 
+   * @param minWidth
+   *          Minimum desired width.
+   * @param maxWidth
+   *          Maximum desired width.
    */
   public void setColumnWidth(final int col, final int minWidth,
       final int maxWidth) {
@@ -218,10 +255,11 @@ public class Table {
   }
 
   /**
-   * Adds a cell with the default CellStyle. See <code>CellStyle</code> for details
-   * on its default characteristics.
+   * Adds a cell with the default CellStyle. See <code>CellStyle</code> for
+   * details on its default characteristics.
    * 
-   * @param content Cell text.
+   * @param content
+   *          Cell text.
    */
   public void addCell(final String content) {
     addCell(content, new CellStyle());
@@ -230,8 +268,10 @@ public class Table {
   /**
    * Adds a cell with a colspan and the default CellStyle.
    * 
-   * @param content Cell text.
-   * @param colSpan Columns this cell will span through.
+   * @param content
+   *          Cell text.
+   * @param colSpan
+   *          Columns this cell will span through.
    */
   public void addCell(final String content, final int colSpan) {
     addCell(content, new CellStyle(), colSpan);
@@ -240,8 +280,10 @@ public class Table {
   /**
    * Adds a cell with a specific cell style.
    * 
-   * @param content Cell text.
-   * @param style Cell style to use when rendering the cell content.
+   * @param content
+   *          Cell text.
+   * @param style
+   *          Cell style to use when rendering the cell content.
    */
   public void addCell(final String content, final CellStyle style) {
     addCell(content, style, 1);
@@ -250,9 +292,12 @@ public class Table {
   /**
    * Adds a cell with a specific cell style and colspan.
    * 
-   * @param content Cell text.
-   * @param style Cell style to use when rendering the cell content.
-   * @param colSpan Columns this cell will span through.
+   * @param content
+   *          Cell text.
+   * @param style
+   *          Cell style to use when rendering the cell content.
+   * @param colSpan
+   *          Columns this cell will span through.
    */
   public void addCell(final String content, final CellStyle style,
       final int colSpan) {
@@ -317,7 +362,7 @@ public class Table {
     for (Column col : this.columns) {
       col.calculateWidth(this.columns, this.tableStyle.borderStyle
           .getTCCorner().length());
-      logger.debug("width=" + col.getColumnWidth());
+      Log.debug("width=" + col.getColumnWidth());
     }
   }
 
