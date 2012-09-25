@@ -9,7 +9,6 @@ import org.nocrala.tools.utils.Log;
 
 public class CellTests extends TestCase {
 
-
   public CellTests(final String txt) {
     super(txt);
   }
@@ -123,6 +122,45 @@ public class CellTests extends TestCase {
     assertEquals("<null>", c.render(6));
     assertEquals("<null> ", c.render(7));
     assertEquals("<null>     ", c.render(11));
+  }
+
+  public void testTerminalFormats() {
+    CellStyle cs = new CellStyle(HorizontalAlign.left, AbbreviationStyle.crop);
+    char esc = 27;
+    Cell c;
+
+    c = new Cell("abc" + esc + "[23;45mdef", cs, 1);
+    assertEquals("a", c.render(1));
+    assertEquals("ab", c.render(2));
+    assertEquals("abc" + esc + "[23;45m", c.render(3));
+    assertEquals("abc" + esc + "[23;45md", c.render(4));
+    assertEquals("abc" + esc + "[23;45mdef", c.render(6));
+    assertEquals("abc" + esc + "[23;45mdef ", c.render(7));
+
+    c = new Cell(esc + "[23;45mdef", cs, 1);
+    assertEquals(esc + "[23;45md", c.render(1));
+    assertEquals(esc + "[23;45mde", c.render(2));
+    assertEquals(esc + "[23;45mdef", c.render(3));
+    assertEquals(esc + "[23;45mdef ", c.render(4));
+
+    c = new Cell("abc" + esc + "[23;45m", cs, 1);
+    assertEquals("a", c.render(1));
+    assertEquals("ab", c.render(2));
+    assertEquals("abc" + esc + "[23;45m", c.render(3));
+    assertEquals("abc" + esc + "[23;45m ", c.render(4));
+
+    c = new Cell("abc" + esc + "[23;45mdef" + esc + "[0mghi", cs, 1);
+    assertEquals("a", c.render(1));
+    assertEquals("ab", c.render(2));
+    assertEquals("abc" + esc + "[23;45m", c.render(3));
+    assertEquals("abc" + esc + "[23;45md", c.render(4));
+    assertEquals("abc" + esc + "[23;45mde", c.render(5));
+    assertEquals("abc" + esc + "[23;45mdef" + esc + "[0m", c.render(6));
+    assertEquals("abc" + esc + "[23;45mdef" + esc + "[0mg", c.render(7));
+    assertEquals("abc" + esc + "[23;45mdef" + esc + "[0mgh", c.render(8));
+    assertEquals("abc" + esc + "[23;45mdef" + esc + "[0mghi", c.render(9));
+    assertEquals("abc" + esc + "[23;45mdef" + esc + "[0mghi ", c.render(10));
+
   }
 
 }

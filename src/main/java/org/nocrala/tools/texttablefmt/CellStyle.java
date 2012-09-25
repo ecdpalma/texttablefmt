@@ -3,12 +3,15 @@ package org.nocrala.tools.texttablefmt;
 import org.nocrala.tools.utils.Filler;
 
 /**
- *  <p>Defines how the content of a cell is rendered.</p>
+ * <p>
+ * Defines how the content of a cell is rendered.
+ * </p>
  * 
- *  </p>It allows to specify the text alignment, the abbreviation mode and rendering of null values.</p>
- *   
+ * </p>It allows to specify the text alignment, the abbreviation mode and
+ * rendering of null values.</p>
+ * 
  * @author valarcon
- *
+ * 
  */
 
 public class CellStyle {
@@ -19,8 +22,12 @@ public class CellStyle {
 
   private static final NullStyle DEFAULT_NULL_STYLE = NullStyle.emptyString;
 
+  private static final boolean DEFAULT_ALLOW_TERMINAL_FORMATS = true;
+
   /**
-   * This enumeration is used to specify how a text is horizontally aligned in a cell.
+   * This enumeration is used to specify how a text is horizontally aligned in a
+   * cell.
+   * 
    * @author valarcon
    */
   public enum HorizontalAlign {
@@ -39,7 +46,9 @@ public class CellStyle {
   };
 
   /**
-   * This enumeration is used to specify how to reduce a text to fit it in a small cell.
+   * This enumeration is used to specify how to reduce a text to fit it in a
+   * small cell.
+   * 
    * @author valarcon
    */
   public enum AbbreviationStyle {
@@ -48,7 +57,8 @@ public class CellStyle {
      */
     crop,
     /**
-     * Will add three dots at the end of the text to show it has been abbreviated. 
+     * Will add three dots at the end of the text to show it has been
+     * abbreviated.
      */
     dots
   };
@@ -59,6 +69,7 @@ public class CellStyle {
 
   /**
    * This enumeration is used to specify how to display cell with null values.
+   * 
    * @author valarcon
    */
   public enum NullStyle {
@@ -78,55 +89,91 @@ public class CellStyle {
 
   private NullStyle nullStyle;
 
+  private boolean allowTerminalFormats;
+
   /**
-   * <p>Default style that assumes <b>HorizontalAlign.left</b>, <b>AbbreviationStyle.dots</b> 
-   * and <b>NullStyle.emptyString</b>.</p> 
+   * <p>
+   * Default style that assumes <b>HorizontalAlign.left</b>,
+   * <b>AbbreviationStyle.dots</b> and <b>NullStyle.emptyString</b>.
+   * </p>
    */
 
   public CellStyle() {
     initialize(DEFAULT_HORIZONTAL_ALIGN, DEFAULT_ABBREVIATION_STYLE,
-        DEFAULT_NULL_STYLE);
+        DEFAULT_NULL_STYLE, DEFAULT_ALLOW_TERMINAL_FORMATS);
   }
 
   /**
-   * <p>Style with a specified horizontal alignment, that assumes <b>AbbreviationStyle.dots</b> 
-   * and <b>NullStyle.emptyString</b>.</p> 
+   * <p>
+   * Style with a specified horizontal alignment, that assumes
+   * <b>AbbreviationStyle.dots</b> and <b>NullStyle.emptyString</b>.
+   * </p>
    */
 
   public CellStyle(final HorizontalAlign horAlign) {
-    initialize(horAlign, DEFAULT_ABBREVIATION_STYLE, DEFAULT_NULL_STYLE);
+    initialize(horAlign, DEFAULT_ABBREVIATION_STYLE, DEFAULT_NULL_STYLE,
+        DEFAULT_ALLOW_TERMINAL_FORMATS);
   }
 
   /**
-   * <p>Style with a specified horizontal alignment and abbreviation style, that assumes 
-   * <b>NullStyle.emptyString</b>.</p> 
+   * <p>
+   * Style with a specified horizontal alignment and abbreviation style, that
+   * assumes <b>NullStyle.emptyString</b>.
+   * </p>
    */
   public CellStyle(final HorizontalAlign horAlign,
       final AbbreviationStyle abbStyle) {
-    initialize(horAlign, abbStyle, DEFAULT_NULL_STYLE);
+    initialize(horAlign, abbStyle, DEFAULT_NULL_STYLE,
+        DEFAULT_ALLOW_TERMINAL_FORMATS);
+  }
+
+  /**
+   * Style with a specified horizontal alignment, abbreviation style and null
+   * style that assumes no terminal formats.
+   * 
+   * @param horAlign
+   *          Horizontal alignment.
+   * @param abbStyle
+   *          Abbreviation style.
+   * @param nullStyle
+   *          Null style.
+   */
+
+  public CellStyle(final HorizontalAlign horAlign,
+      final AbbreviationStyle abbStyle, final NullStyle nullStyle) {
+    initialize(horAlign, abbStyle, nullStyle, DEFAULT_ALLOW_TERMINAL_FORMATS);
   }
 
   /**
    * Full constructor, that specifies all characteristics.
    * 
-   * @param horAlign Horizontal alignment.
-   * @param abbStyle Abbreviation style.
-   * @param nullStyle Null style.
+   * @param horAlign
+   *          Horizontal alignment.
+   * @param abbStyle
+   *          Abbreviation style.
+   * @param nullStyle
+   *          Null style.
+   * @param allowTerminalFormats
+   *          terminal format characters have zero width for cell width
+   *          calculation purposes.
    */
 
   public CellStyle(final HorizontalAlign horAlign,
-      final AbbreviationStyle abbStyle, final NullStyle nullStyle) {
-    initialize(horAlign, abbStyle, nullStyle);
+      final AbbreviationStyle abbStyle, final NullStyle nullStyle,
+      final boolean allowTerminalFormats) {
+    initialize(horAlign, abbStyle, nullStyle, allowTerminalFormats);
   }
 
   private void initialize(final HorizontalAlign horAlign,
-      final AbbreviationStyle abbStyle, final NullStyle nullStyle) {
+      final AbbreviationStyle abbStyle, final NullStyle nullStyle,
+      final boolean allowTerminalFormats) {
     this.horAlign = horAlign;
     this.abbStyle = abbStyle;
     this.nullStyle = nullStyle;
+    this.allowTerminalFormats = allowTerminalFormats;
   }
 
-  private String renderUnformattedText(final String txt) {
+  private String renderUncroppedText(final String txt) {
     if (txt == null) {
       if (NullStyle.emptyString.equals(this.nullStyle)) {
         return "";
@@ -139,26 +186,55 @@ public class CellStyle {
   /**
    * Returns the width of a rendered text, based on the cell content and style.
    * 
-   * @param txt Text to render.
+   * @param txt
+   *          Text to render.
    * @return width of a rendered text, based on the cell style.
    */
   public int getWidth(final String txt) {
-    return renderUnformattedText(txt).length();
+    String content;
+    if (this.allowTerminalFormats && txt != null) {
+      content = removeTerminalFormats(txt);
+    } else {
+      content = txt;
+    }
+    return renderUncroppedText(content).length();
+  }
+
+  private String removeTerminalFormats(final String txt) {
+    StringBuffer sb = new StringBuffer();
+    int i = 0;
+    while (i < txt.length()) {
+      int esc = txt.indexOf((char) 27, i);
+      if (esc == -1) {
+        sb.append(txt.substring(i));
+        return sb.toString();
+      }
+      int m = txt.indexOf('m', esc);
+      if (m == -1) {
+        return sb.toString();
+      }
+      sb.append(txt.substring(i, esc));
+      i = m + 1;
+    }
+    return sb.toString();
   }
 
   /**
    * Renders a text based on the cell content, style and specified width.
    * 
-   * @param txt Text to render.
-   * @param width Fixed width to accommodate the test to.
+   * @param txt
+   *          Text to render.
+   * @param width
+   *          Fixed width to accommodate the test to.
    * @return Rendered text based on the cell style and the specified width.
    */
   public String render(final String txt, final int width) {
-    String plainText = renderUnformattedText(txt);
+    String plainText = renderUncroppedText(txt);
 
     // Text too short.
 
-    if (plainText.length() < width) {
+    int tWidth = getWidth(txt);
+    if (tWidth < width) {
       switch (this.horAlign) {
       case left:
         return alignLeft(plainText, width);
@@ -171,7 +247,7 @@ public class CellStyle {
 
     // Text that fits perfect.
 
-    if (plainText.length() == width) {
+    if (tWidth == width) {
       return plainText;
     }
 
@@ -186,24 +262,49 @@ public class CellStyle {
   }
 
   private String alignLeft(final String txt, final int width) {
-    int diff = width - txt.length();
+    int diff = width - getWidth(txt);
     return txt + Filler.getFiller(diff);
   }
 
   private String alignCenter(final String txt, final int width) {
-    int diff = width - txt.length();
+    int diff = width - getWidth(txt);
     int diffLeft = diff / 2;
     int diffRight = diff - diffLeft;
     return Filler.getFiller(diffLeft) + txt + Filler.getFiller(diffRight);
   }
 
   private String alignRight(final String txt, final int width) {
-    int diff = width - txt.length();
+    int diff = width - getWidth(txt);
     return Filler.getFiller(diff) + txt;
   }
 
   private String abbreviateCrop(final String txt, final int width) {
-    return txt.substring(0, width);
+    int i = getLength(txt, width);
+    // System.out.println(txt + " [" + width + "] -> " + txt.substring(0, i)
+    // + " (" + i + ")");
+    return txt.substring(0, i);
+  }
+
+  private int getLength(final String txt, final int width) {
+    int added = 0;
+    int i = 0;
+    while (i < txt.length() && added <= width) {
+      char c = txt.charAt(i);
+      if (c == 27) {
+        int m = txt.indexOf('m', i);
+        if (m == -1) {
+          i = txt.length();
+        } else {
+          i = m + 1;
+        }
+      } else if (added < width) {
+        i++;
+        added++;
+      } else {
+        return i;
+      }
+    }
+    return i;
   }
 
   private String abbreviateDots(final String txt, final int width) {
@@ -213,7 +314,7 @@ public class CellStyle {
     if (width <= DOTS_TEXT.length()) {
       return DOTS_TEXT.substring(0, width);
     }
-    return txt.substring(0, width - DOTS_TEXT.length()) + DOTS_TEXT;
+    return abbreviateCrop(txt, width - DOTS_TEXT.length()) + DOTS_TEXT;
   }
 
   static String renderNullCell(final int width) {
