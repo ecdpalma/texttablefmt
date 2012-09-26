@@ -22,7 +22,7 @@ public class CellStyle {
 
   private static final NullStyle DEFAULT_NULL_STYLE = NullStyle.emptyString;
 
-  private static final boolean DEFAULT_ALLOW_TERMINAL_FORMATS = true;
+  private static final boolean DEFAULT_HANDLE_TERMINAL_FORMATS = true;
 
   /**
    * This enumeration is used to specify how a text is horizontally aligned in a
@@ -89,7 +89,7 @@ public class CellStyle {
 
   private NullStyle nullStyle;
 
-  private boolean allowTerminalFormats;
+  private boolean handleTerminalFormats;
 
   /**
    * <p>
@@ -100,7 +100,7 @@ public class CellStyle {
 
   public CellStyle() {
     initialize(DEFAULT_HORIZONTAL_ALIGN, DEFAULT_ABBREVIATION_STYLE,
-        DEFAULT_NULL_STYLE, DEFAULT_ALLOW_TERMINAL_FORMATS);
+        DEFAULT_NULL_STYLE, DEFAULT_HANDLE_TERMINAL_FORMATS);
   }
 
   /**
@@ -112,7 +112,7 @@ public class CellStyle {
 
   public CellStyle(final HorizontalAlign horAlign) {
     initialize(horAlign, DEFAULT_ABBREVIATION_STYLE, DEFAULT_NULL_STYLE,
-        DEFAULT_ALLOW_TERMINAL_FORMATS);
+        DEFAULT_HANDLE_TERMINAL_FORMATS);
   }
 
   /**
@@ -124,7 +124,7 @@ public class CellStyle {
   public CellStyle(final HorizontalAlign horAlign,
       final AbbreviationStyle abbStyle) {
     initialize(horAlign, abbStyle, DEFAULT_NULL_STYLE,
-        DEFAULT_ALLOW_TERMINAL_FORMATS);
+        DEFAULT_HANDLE_TERMINAL_FORMATS);
   }
 
   /**
@@ -141,7 +141,7 @@ public class CellStyle {
 
   public CellStyle(final HorizontalAlign horAlign,
       final AbbreviationStyle abbStyle, final NullStyle nullStyle) {
-    initialize(horAlign, abbStyle, nullStyle, DEFAULT_ALLOW_TERMINAL_FORMATS);
+    initialize(horAlign, abbStyle, nullStyle, DEFAULT_HANDLE_TERMINAL_FORMATS);
   }
 
   /**
@@ -153,9 +153,11 @@ public class CellStyle {
    *          Abbreviation style.
    * @param nullStyle
    *          Null style.
-   * @param allowTerminalFormats
-   *          terminal format characters have zero width for cell width
-   *          calculation purposes.
+   * @param handleTerminalFormats
+   *          Specifies if terminal format characters should be handled. True by
+   *          default. When handled, all Terminal sequences, like ESCAPE[33m,
+   *          are considered to have a zero width, and when a cell has them,
+   *          it's appended a FORMAT_RESET_SEQUENCE (ESCAPE[0m).
    */
 
   public CellStyle(final HorizontalAlign horAlign,
@@ -166,11 +168,11 @@ public class CellStyle {
 
   private void initialize(final HorizontalAlign horAlign,
       final AbbreviationStyle abbStyle, final NullStyle nullStyle,
-      final boolean allowTerminalFormats) {
+      final boolean handleTerminalFormats) {
     this.horAlign = horAlign;
     this.abbStyle = abbStyle;
     this.nullStyle = nullStyle;
-    this.allowTerminalFormats = allowTerminalFormats;
+    this.handleTerminalFormats = handleTerminalFormats;
   }
 
   private String renderUncroppedText(final String txt) {
@@ -192,7 +194,7 @@ public class CellStyle {
    */
   public int getWidth(final String txt) {
     String content;
-    if (this.allowTerminalFormats && txt != null) {
+    if (this.handleTerminalFormats && txt != null) {
       content = removeTerminalFormats(txt);
     } else {
       content = txt;
@@ -204,7 +206,7 @@ public class CellStyle {
     StringBuffer sb = new StringBuffer();
     int i = 0;
     while (i < txt.length()) {
-      int esc = txt.indexOf((char) 27, i);
+      int esc = txt.indexOf(ESC, i);
       if (esc == -1) {
         sb.append(txt.substring(i));
         return sb.toString();
@@ -230,6 +232,16 @@ public class CellStyle {
    */
   public String render(final String txt, final int width) {
     String plainText = renderUncroppedText(txt);
+
+    String uc = renderUnclosedContent(txt, width, plainText);
+    if (this.handleTerminalFormats && (uc.indexOf("[") != -1)) {
+      return uc + FORMAT_RESET_SEQUENCE;
+    }
+    return uc;
+  }
+
+  private String renderUnclosedContent(final String txt, final int width,
+      final String plainText) {
 
     // Text too short.
 
@@ -278,11 +290,14 @@ public class CellStyle {
     return Filler.getFiller(diff) + txt;
   }
 
+  private static final char ESC = 27;
+  private static final String FORMAT_RESET_SEQUENCE = ESC + "[0m";
+
   private String abbreviateCrop(final String txt, final int width) {
-    int i = getLength(txt, width);
+    int len = getLength(txt, width);
     // System.out.println(txt + " [" + width + "] -> " + txt.substring(0, i)
     // + " (" + i + ")");
-    return txt.substring(0, i);
+    return txt.substring(0, len);
   }
 
   private int getLength(final String txt, final int width) {
@@ -290,7 +305,7 @@ public class CellStyle {
     int i = 0;
     while (i < txt.length() && added <= width) {
       char c = txt.charAt(i);
-      if (c == 27) {
+      if (c == ESC) {
         int m = txt.indexOf('m', i);
         if (m == -1) {
           i = txt.length();

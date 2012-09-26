@@ -20,7 +20,9 @@ class Cell {
   }
 
   public String render(final int width) {
-    return this.style.render(this.content, width);
+    String r = this.style.render(this.content, width);
+    // System.out.println("r=" + r);
+    return r;
   }
 
   public String getContent() {
