@@ -162,8 +162,8 @@ public class CellStyle {
 
   public CellStyle(final HorizontalAlign horAlign,
       final AbbreviationStyle abbStyle, final NullStyle nullStyle,
-      final boolean allowTerminalFormats) {
-    initialize(horAlign, abbStyle, nullStyle, allowTerminalFormats);
+      final boolean handleTerminalFormats) {
+    initialize(horAlign, abbStyle, nullStyle, handleTerminalFormats);
   }
 
   private void initialize(final HorizontalAlign horAlign,
