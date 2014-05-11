@@ -41,3 +41,6 @@
 
 11. Add "curtain" tiles.
  - dode
+
+12. Add multi-line support.
+
